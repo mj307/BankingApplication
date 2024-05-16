@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!-- This will have the inputs for creating an account -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Account</title>
+    <style>
+        body{
+            background-color: #dfdddd;
+            color: #081b54;
+        }
+        h1{
+            color: #081b54;
+            font-size: 40px;
+            font-family: Elisar Infant;
+        }
+        .button{
+            color: #081b54;
+            background-color: #dfdddd;
+            font-size: 20px;
+            font-family: Elisar Infant;
+            border:#dfdddd;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        .container{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+        }
+        .createHeading{
+            font-size: 30px;
+        }
+    </style>
+</head>
+<body>
+<h1>Bank of America</h1>
+<div class="container">
+
+    <a class="button" href="http://127.0.0.1:8000/create">Create Account</a>
+
+    <a class="button" href="http://127.0.0.1:8000/deposit">Deposit Money</a>
+
+    <a class="button" href="http://127.0.0.1:8000/withdraw">Withdraw Money</a>
+
+    <a class="button" href="http://127.0.0.1:8000/interest">Calculate Interest</a>
+
+    <a class="button" href="http://127.0.0.1:8000/transactions">View Transaction</a>
+</div>
+
+<h1 class="createHeading">Create Your Bank of America Account!</h1>
+
+<form action="http://127.0.0.1:8000/create" method="post">
+    <label for="name">Enter your name</label>
+    <input type="text" id="name" name="name"><br>
+
+    <label for="acc_type">Enter your Account Type</label>
+    <input type="text" id="acc_type" name="acc_type"><br>
+
+    <label for="balance">Enter your starting balance</label>
+    <input type="text" id="balance" name="balance"><br>
+
+    <input type="submit" value="Submit">
+</form>
+
+</body>
+</html>
+
+
+
