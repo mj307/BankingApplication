@@ -1,15 +1,15 @@
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, HTTPException, Request, Form, Depends
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 import logging
 from datetime import datetime
 import pymysql.cursors
-from random import randint
+
 app = FastAPI()
 
 templates = Jinja2Templates(directory="templates/")
-logging.basicConfig(filename='app.log', level=logging.DEBUG)
+logging.basicConfig(filename='app.log', level=logging.DEBUG,format='%(asctime)s %(levelname)-8s %(message)s',datefmt='%Y-%m-%d %H:%M:%S')
 
 
 class AccountCreate(BaseModel):
@@ -17,15 +17,7 @@ class AccountCreate(BaseModel):
     acctype: str
     balance: int
 
-class Transaction(BaseModel):
-    accnum: int
-    amt: int
-
-class InterestCalc(BaseModel):
-    accnum: int
-    date: datetime
-
-
+# Establish MySQL connection
 connection = pymysql.connect(host='localhost',
                              user='aj',
                              password='abc',
@@ -33,18 +25,99 @@ connection = pymysql.connect(host='localhost',
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
 
+with connection.cursor() as cursor:
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS accounts (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            acctype VARCHAR(255) NOT NULL,
+            balance INT NOT NULL
+        )
+    """)
+    connection.commit()
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+# ############################################## CREATE ###############################################
 @app.get("/renderCreateAccForm", response_class=HTMLResponse)
 async def render_create_acc_form(request: Request):
     return templates.TemplateResponse("create.html", {"request": request})
 
+@app.post("/create", response_class=HTMLResponse)
+async def create_account(
+        user: AccountCreate = Depends()):
+    with connection.cursor() as cursor:
+        sql = "INSERT INTO accounts (name, acctype, balance) VALUES (%s, %s, %s)"
+        cursor.execute(sql, (user.name, user.acctype, user.balance))
+        connection.commit()
+    return RedirectResponse(url="/account_created", status_code=303)
+
+@app.get("/account_created", response_class=HTMLResponse)
+async def account_created(request: Request):
+    return templates.TemplateResponse("acc_created.html", {"request": request})
+
+# ############################################## DEPOSIT ###############################################
 @app.get("/renderDeposit", response_class=HTMLResponse)
 async def render_deposit(request: Request):
     return templates.TemplateResponse("deposit.html", {"request": request})
+
+@app.post("/deposit", response_class=HTMLResponse)
+async def deposit(request: Request, accnum: int = Form(...), amt: int = Form(...)):
+    try:
+        with connection.cursor() as cursor:
+            sql = "UPDATE accounts SET balance = balance + %s WHERE id = %s"
+            cursor.execute(sql, (amt, accnum))
+        connection.commit()
+    except Exception as e:
+        logging.error(f"Error depositing to account: {e}")
+        raise HTTPException(status_code=500, detail="Could not deposit amount")
+    return RedirectResponse(url="/depositCompleted", status_code=303)
+
+@app.get("/depositCompleted",response_class=HTMLResponse)
+async def depositComplete(request: Request):
+    return templates.TemplateResponse("depositCompleted.html", {"request":request})
+
+# ############################################## WITHDRAW ###############################################
+@app.get("/renderWithdraw", response_class=HTMLResponse)
+async def render_withdraw(request: Request):
+    return templates.TemplateResponse("withdraw.html", {"request": request})
+
+@app.post("/withdraw", response_class=HTMLResponse)
+async def deposit(request: Request, accnum: int = Form(...), amt: int = Form(...)):
+    try:
+        logging.info(f"Received withdrawal request for account number {accnum} and amount {amt}")
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT balance FROM accounts WHERE id = %s", (accnum))
+            account_balance_row = cursor.fetchone()
+            logging.info(f"have fetchone {accnum}")
+            logging.info(account_balance_row)
+            if account_balance_row is None:
+                logging.info("came into if block")
+                raise HTTPException(status_code=404, detail="Account not found")
+            account_balance = account_balance_row['balance']
+            logging.info(f"Retrieved account balance for {accnum}: {account_balance}")
+            logging.info(f"Withdrawing {amt} from account {accnum}")
+            if amt > account_balance:
+                raise HTTPException(status_code=406, detail="Withdrawal amount exceeds account balance")
+            sql = "UPDATE accounts SET balance = balance - %s WHERE id = %s"
+            cursor.execute(sql, (amt, accnum))
+        connection.commit()
+        logging.info("Withdrawal successful")
+
+    except Exception as e:
+        logging.error(f"Error withdrawing from account: {e}")
+        raise HTTPException(status_code=500, detail="Could not withdraw amount")
+
+    return RedirectResponse(url="/withdrawCompleted", status_code=303)
+
+
+@app.get("/withdrawCompleted",response_class=HTMLResponse)
+async def depositComplete(request: Request):
+    return templates.TemplateResponse("withdrawCompleted.html", {"request":request})
+
+'''
 
 @app.get("/renderWithdraw", response_class=HTMLResponse)
 async def render_withdraw(request: Request):
@@ -94,7 +167,7 @@ def withdraw(transaction: Transaction):
         logging.error(f"Error withdrawing from account: {e}")
         raise HTTPException(status_code=500, detail="Could not withdraw amount")
 
-
+'''
 
 
 
@@ -174,4 +247,16 @@ def view_transactions(request: Request):
 
 
 
-
+'''
+@app.post("/create", response_class=HTMLResponse)
+async def create_account(
+        request: Request,
+        name: str = Form(...),
+        acctype: str = Form(...),
+        balance: int = Form(...)):
+    with connection.cursor() as cursor:
+        sql = "INSERT INTO accounts (name, acctype, balance) VALUES (%s, %s, %s)"
+        cursor.execute(sql, (name, acctype, balance))
+        connection.commit()
+    return RedirectResponse(url="/account_created", status_code=303)
+'''
