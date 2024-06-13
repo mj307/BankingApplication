@@ -6,69 +6,85 @@
     <title>Create Account</title>
     <style>
         body{
-            background-color: #dfdddd;
-            color: #081b54;
+        background-color: #dfdddd;
+        color: #081b54;
         }
         h1{
-            color: #081b54;
-            font-size: 40px;
-            font-family: Elisar Infant;
+        color: #081b54;
+        font-size: 40px;
+        font-family: Elisar Infant;
         }
         .button{
-            color: #081b54;
-            background-color: #dfdddd;
-            font-size: 20px;
-            font-family: Elisar Infant;
-            border:#dfdddd;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 10px;
-            border-radius: 5px;
+        color: #081b54;
+        background-color: #dfdddd;
+        font-size: 20px;
+        font-family: Elisar Infant;
+        border:#dfdddd;
+        cursor: pointer;
         }
         .container{
-            display: flex;
-            flex-direction: row;
-            justify-content: space-around;
-        }
-        .createHeading{
-            font-size: 30px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
         }
     </style>
 </head>
 <body>
-<h1>Bank of America</h1>
+<h1>Bank of Med</h1>
 <div class="container">
 
-    <a class="button" href="http://127.0.0.1:8000/create">Create Account</a>
+    <form action ="/renderCreateAccForm" >
 
-    <a class="button" href="http://127.0.0.1:8000/deposit">Deposit Money</a>
+        <input class="button" type = "submit" value= "Create Account"><br>
+    </form>
 
-    <a class="button" href="http://127.0.0.1:8000/withdraw">Withdraw Money</a>
+<form action = "/renderDeposit">
 
-    <a class="button" href="http://127.0.0.1:8000/interest">Calculate Interest</a>
+    <input class="button" type = "submit" value= "Deposit Money"><br>
+</form>
 
-    <a class="button" href="http://127.0.0.1:8000/transactions">View Transaction</a>
+<form action="/renderWithdraw">
+
+    <input class="button" type = "submit" value= "Withdraw Money"><br>
+</form>
+
+<form action="/renderInterest">
+
+    <input class="button" type = "submit" value= "Calculate Interest"><br>
+</form>
+
+<form action="/renderTransactions">
+
+    <input class="button" type = "submit" value= "View Transaction"><br>
+</form>
 </div>
 
-<h1 class="createHeading">Create Your Bank of America Account!</h1>
+<div class="container">
+    <h1 class="createHeading">Create Your Bank of America Account!</h1>
 
-<form action="http://127.0.0.1:8000/create" method="post">
-    <label for="name">Enter your name</label>
-    <input type="text" id="name" name="name"><br>
+    <form action="/create" method="post">
+        <label for="name">Create a username</label>
+        <input type="text" id="username" name="username"><br>
 
-    <label for="acc_type">Enter your Account Type</label>
-    <input type="text" id="acc_type" name="acc_type"><br>
+        <label for="name">Enter a password</label>
+        <input type="text" id="password" name="password"><br>
 
-    <label for="balance">Enter your starting balance</label>
-    <input type="text" id="balance" name="balance"><br>
+        <label for="name">Enter your name</label>
+        <input type="text" id="name" name="name"><br>
 
-    <input type="submit" value="Submit">
-</form>
+        <label for="acctype">Enter your Account Type</label>
+        <input type="text" id="acctype" name="acctype"><br>
+
+        <label for="balance">Enter your starting balance</label>
+        <input type="text" id="balance" name="balance"><br>
+
+        <input type="submit" value="Submit">
+    </form>
+</div>
 
 </body>
 </html>
+
 
 
 

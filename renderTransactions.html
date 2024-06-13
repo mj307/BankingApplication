@@ -3,8 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <title>Transaction</title>
+    <style>
+        body{
+        background-color: #dfdddd;
+        color: #081b54;
+        }
+        h1{
+        color: #081b54;
+        font-size: 40px;
+        font-family: Elisar Infant;
+        }
+        .button{
+        color: #081b54;
+        background-color: #dfdddd;
+        font-size: 20px;
+        font-family: Elisar Infant;
+        border:#dfdddd;
+        cursor: pointer;
+        }
+        .container{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+
 </head>
 <body>
-<h1>Done</h1>
+<h1>Bank of Med</h1>
+<div class="container">
+<form action = "/renderDeposit">
+
+    <input class="button" type = "submit" value= "Deposit Money"><br>
+</form>
+
+<form action="/renderWithdraw">
+
+    <input class="button" type = "submit" value= "Withdraw Money"><br>
+</form>
+
+<form action="/renderInterest">
+
+    <input class="button" type = "submit" value= "Calculate Interest"><br>
+</form>
+
+<form action="/renderTransactions">
+
+    <input class="button" type = "submit" value= "View Transaction"><br>
+</form>
+
+    <form action="/renderLogout">
+
+    <input class="button" type = "submit" value= "Logout"><br>
+</form>
+
+</div>
+
+
+
+
+<h2>Transactions</h2>
+
+<table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+            <tr>
+                <td>{{ transaction.transaction_date}}</td>
+                <td>{{ transaction.transaction_type}}</td>
+                <td>{{ transaction.amount }}</td>
+                <td>{{ transaction.new_balance}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+
+
+
+
+
 </body>
 </html>

@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Withdraw Money</title>
-    <style>
+    <title>Login Complete</title>
+        <style>
         body{
         background-color: #dfdddd;
         color: #081b54;
@@ -29,13 +29,12 @@
         .withdrawHeading{
         font-size: 30px;
         }
-
     </style>
+
 </head>
 <body>
 <h1>Bank of Med</h1>
 <div class="container">
-
 <form action = "/renderDeposit">
 
     <input class="button" type = "submit" value= "Deposit Money"><br>
@@ -57,20 +56,10 @@
 </form>
 
     <form action="/renderLogout">
-
     <input class="button" type = "submit" value= "Logout"><br>
 </form>
+
 </div>
 
-<h1 class="withdrawHeading">Withdraw Money From Your Account!</h1>
-
-<form action="/withdraw" method="post">
-
-<label for="amt">Enter the amount you would like to withdraw: </label>
-<input type = "text" id="amt" name="amt"><br>
-
-<input type = "submit" value="Submit">
-
-</form>
 </body>
 </html>

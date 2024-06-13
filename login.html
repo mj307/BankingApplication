@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Withdraw Money</title>
+    <title>Login</title>
+
     <style>
         body{
         background-color: #dfdddd;
@@ -26,51 +27,50 @@
         flex-direction: row;
         justify-content: space-around;
         }
-        .withdrawHeading{
-        font-size: 30px;
-        }
-
     </style>
+
+
+
+
 </head>
 <body>
 <h1>Bank of Med</h1>
 <div class="container">
-
+    <form action ="/renderCreateAccForm" >
+        <input class="button" type = "submit" value= "Create Account"><br>
+    </form>
 <form action = "/renderDeposit">
-
     <input class="button" type = "submit" value= "Deposit Money"><br>
 </form>
-
 <form action="/renderWithdraw">
-
     <input class="button" type = "submit" value= "Withdraw Money"><br>
 </form>
-
 <form action="/renderInterest">
-
     <input class="button" type = "submit" value= "Calculate Interest"><br>
 </form>
-
 <form action="/renderTransactions">
-
     <input class="button" type = "submit" value= "View Transaction"><br>
-</form>
-
-    <form action="/renderLogout">
-
-    <input class="button" type = "submit" value= "Logout"><br>
 </form>
 </div>
 
-<h1 class="withdrawHeading">Withdraw Money From Your Account!</h1>
 
-<form action="/withdraw" method="post">
+<h1 class="loginHeading">Login to Your Account!</h1>
+<form action="/login" method="post">
 
-<label for="amt">Enter the amount you would like to withdraw: </label>
-<input type = "text" id="amt" name="amt"><br>
+<label for="username">Enter your Username</label>
+<input type = "text" id="username" name="username"><br>
+
+<label for="password">Enter your password: </label>
+<input type = "text" id="password" name="password"><br>
 
 <input type = "submit" value="Submit">
 
 </form>
+
+
+
+
+
+
 </body>
 </html>
