@@ -4,15 +4,21 @@
 
 ## Features
 💁 Account creation, login, and logout functionalities
- 📓 Deposit, withdrawal, and transaction logging capabilities
-  💻 An intuitive web UI for data input
+
+📓 Deposit, withdrawal, and transaction logging capabilities
+ 
+💻 An intuitive web UI for data input
 
 ## Behind the Scenes
 The application utilizes the following packages and tools:
 - **FastAPI**: Connects the backend and frontend components
+  
 - **HTML/CSS**: Constructs the dashboard and website interface
+  
 - **MySQL**: Stores user data
+  
 - **Session Cookies**: Remembers users, eliminating the need for constant logins
+  
 - **Logging**: Tracks user actions
 
 ## Getting Started
