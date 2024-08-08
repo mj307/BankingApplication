@@ -1,13 +1,13 @@
-# Bank of Med 💰 🌇
+# Bank of Med 💰 🏦
 
-### Welcome to the Bank of Med, a straightforward banking application.
+### Welcome to the Bank of Med, a straightforward banking application 🌇
 
 ## Features
-💁 Account creation, login, and logout functionalities
+💁  Account creation, login, and logout functionalities
 
-📓 Deposit, withdrawal, and transaction logging capabilities
+📓  Deposit, withdrawal, and transaction logging capabilities
  
-💻 An intuitive web UI for data input
+💻  An intuitive web UI for data input
 
 ## Behind the Scenes
 The application utilizes the following packages and tools:
@@ -42,7 +42,7 @@ connection = pymysql.connect(
     cursorclass=pymysql.cursors.DictCursor
 )
 ```
-Replace the host,user,password, and database variables with your own MySQL database configurations. 
+Replace the host, user, password, and database variables with your own MySQL database configurations. 
 
 
 ### Running the Code
