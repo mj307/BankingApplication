@@ -2,6 +2,10 @@
 
 ### Welcome to the Bank of Med, a straightforward banking application 🌇
 
+
+![Screenshot 2024-08-08 at 9 32 46 AM](https://github.com/user-attachments/assets/6b8bea1d-94fd-4a25-a1a9-178afb489a9b)
+
+
 ## Features
 💁  Account creation, login, and logout functionalities
 
@@ -71,5 +75,10 @@ After pulling the image, start the application with the following command:
 ```shell
 docker run -d -p 8000:8000 -e HOST=host_name -e USER=username -e PASSWORD=password -e DATABASE=database jam777/bankofmed:latest
 ```
+Replace the HOST, USER, PASSWORD, and DATABASE environment variables with your own configurations.
 
 And that’s all there is to it!
+
+![Screenshot 2024-08-08 at 9 33 04 AM](https://github.com/user-attachments/assets/f062d6c0-3fec-4ee2-8ba4-6b93ebb94a62)
+
+
