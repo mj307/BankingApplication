@@ -81,6 +81,7 @@ And that’s all there is to it!
 
 Here's a glimpse of the app's standout features—take a look at the transactions log!
 
-![Screenshot 2024-08-08 at 9 33 04 AM](https://github.com/user-attachments/assets/f062d6c0-3fec-4ee2-8ba4-6b93ebb94a62)
+<img width="1362" alt="Screenshot 2024-08-08 at 9 37 59 AM" src="https://github.com/user-attachments/assets/f0207a63-caa4-483e-90d3-8b5b7d26c4a2">
+
 
 
