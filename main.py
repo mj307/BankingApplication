@@ -1,7 +1,6 @@
 # status_codes are not optional for the Redirect Response function. without it, the method will not run and will give
 # an error output
 
-
 from fastapi import FastAPI, HTTPException, Request, Form, Depends, Response, Cookie
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -9,11 +8,25 @@ from pydantic import BaseModel
 import logging
 from datetime import datetime
 import pymysql.cursors
+import os
 
 app = FastAPI()
 
 templates = Jinja2Templates(directory="templates/")
-logging.basicConfig(filename='app.log', level=logging.DEBUG,format='%(asctime)s %(levelname)-8s %(message)s',datefmt='%Y-%m-%d %H:%M:%S')
+# original
+# logging.basicConfig(filename='app.log', level=logging.DEBUG,format='%(asctime)s %(levelname)-8s %(message)s',datefmt='%Y-%m-%d %H:%M:%S')
+
+
+# ensures that logging will work across all machines 
+log_file_path = 'logs/app.log'
+os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
+logging.basicConfig(
+    filename=log_file_path,
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+logger.info('Application started')
 
 class AccountCreate(BaseModel):
     name: str
@@ -21,14 +34,27 @@ class AccountCreate(BaseModel):
     balance: int
     username: str
     password: str
+#'''
+host = os.getenv("HOST")
+user = os.getenv("USER")
+pw = os.getenv("PASSWORD")
+db= os.getenv("DATABASE")
+connection = pymysql.connect(host=host,
+                             user=user,
+                             password=pw,
+                             database=db,
+                             charset='utf8mb4',
+                             cursorclass=pymysql.cursors.DictCursor)
+#'''
 
-
+'''
 connection = pymysql.connect(host='localhost',
                              user='aj',
                              password='abc',
                              database='practice',
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
+'''
 
 with connection.cursor() as cursor:
     cursor.execute("""
@@ -102,19 +128,22 @@ async def login(response: Response, username: str = Form(...), password: str = F
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM accounts WHERE username = %s AND password = %s", (username,password))
             account = cursor.fetchone()
-            logging.info('Here is acc: ' + str(account))
+            #logging.info('Here is acc: ' + str(account))
+            logger.info('Here is acc: ' + str(account))
             if account is None:
                 logging.info("Account is None")
                 raise HTTPException(status_code=404, detail="Account not found") #check if acc exists
             else:
-                logging.info("in else block")
+                #logging.info("in else block")
+                logger.info("in else block")
                 response = RedirectResponse(url="/postLogin", status_code=303)
                 response.set_cookie(key='user', value=username)
                 logging.info('cookie set')
                 return response
 
     except:
-        logging.info('came into exception')
+        #logging.info('came into exception')
+        logger.info('came into exception')
         raise HTTPException(status_code=404, detail = 'code being annoying')
 
 # if login (user pass combination) doesn't exist then return another page that has an error message with the same
@@ -137,13 +166,16 @@ async def renderLogout(request: Request):
 
 @app.post("/logout")
 async def logout(response: Response):
-    logging.info("in logout")
+    #logging.info("in logout")
+    logger.info("in logout")
     response = RedirectResponse(url="/postLogout", status_code=303) # if we want to set or delete a cookie, we need to
     # do it as a RedirectResponse object. we can't just take response as an input to the logout function, it needs to be
     # redefined inside the actual function itself
-    logging.info("redirected url")
+    #logging.info("redirected url")
+    logger.info("redirected url")
     response.delete_cookie("user")
-    logging.info("deleted cookie")
+    #logging.info("deleted cookie")
+    logger.info('deleted cookie')
     return response
     #response.delete_cookie("user")
     #logging.info("logged out")
@@ -151,7 +183,8 @@ async def logout(response: Response):
 
 @app.get("/postLogout", response_class=HTMLResponse)
 async def index_page(request: Request):
-    logging.info("in post logout function -- rendering index.html ")
+    #logging.info("in post logout function -- rendering index.html ")
+    logger.info("in post logout function -- rendering index.html ")
     return templates.TemplateResponse("index.html", {"request": request})
 
 
@@ -168,7 +201,8 @@ def get_balance(cursor, username):
     sql = "SELECT balance FROM accounts WHERE username = %s"
     cursor.execute(sql, (username,))
     result = cursor.fetchone()
-    logging.info(f"here is the result for get balance: {result}")
+    #logging.info(f"here is the result for get balance: {result}")
+    logger.info(f"here is the result for get balance: {result}")
     if result:
         return result['balance']
     else:
@@ -185,13 +219,15 @@ async def deposit(request: Request, amt: int = Form(...)):
             sql = "SELECT balance FROM accounts WHERE username = %s"
             cursor.execute(sql, (username,))
             result = cursor.fetchone()
-            logging.info(result)
+            #logging.info(result)
+            logger.info(result)
             sql = "UPDATE accounts SET balance = balance + %s WHERE username = %s"
             cursor.execute(sql, (amt, username))
 
             cursor.execute("SELECT id FROM accounts WHERE username = %s", (username,))
             acc_details = cursor.fetchone()
-            logging.info(f"Here are the acc_details: {acc_details}")
+            #logging.info(f"Here are the acc_details: {acc_details}")
+            logger.info(f"Here are the acc_details: {acc_details}")
             account_number = acc_details['id']
 
             sql_insert_transaction = "INSERT INTO transaction_info (accnum, transaction_date, transaction_type, amount, new_balance) VALUES (%s, %s, %s, %s, %s)"
@@ -201,7 +237,8 @@ async def deposit(request: Request, amt: int = Form(...)):
 
         connection.commit()
     except Exception as e:
-        logging.error(f"Error depositing to account: {e}")
+        #logging.error(f"Error depositing to account: {e}")
+        logger.error(f"Error depositing to account: {e}")
         #raise HTTPException(status_code=500, detail="Could not deposit amount")
         return RedirectResponse(url="/renderLogin", status_code=303)
 
@@ -230,51 +267,64 @@ async def render_withdraw(request: Request):
 async def withdraw(request: Request, amt: int = Form(...)):
     try:
         username = request.cookies.get('user')
-        logging.info(f'username = {username}')
+        #logging.info(f'username = {username}')
+        logger.info(f'username = {username}')
         with connection.cursor() as cursor:
             cursor.execute("SELECT balance FROM accounts WHERE username = %s", (username,))
             user_details = cursor.fetchone()
-            logging.info(user_details)
+            #logging.info(user_details)
+            logger.info(user_details)
             if user_details is None:
-                logging.info("came into if block")
+                #logging.info("came into if block")
+                logger.info("came into if block")
                 raise HTTPException(status_code=404, detail="Account not found")
 
             account_balance = user_details['balance']
-            logging.info(f"Retrieved account balance for {username}: {account_balance}")
+            #logging.info(f"Retrieved account balance for {username}: {account_balance}")
+            logger.info(f"Retrieved account balance for {username}: {account_balance}")
             # logging.info(f"Withdrawing {amt} from account {accnum}")
             if amt > account_balance:
                 raise HTTPException(status_code=406, detail="Withdrawal amount exceeds account balance")
-            logging.info("before SQL")
+            #logging.info("before SQL")
+            logger.info("before SQL")
             sql = "UPDATE accounts SET balance = balance - %s WHERE username = %s"
             cursor.execute(sql, (amt, username))
             connection.commit()
-            logging.info("after SQL")
+            #logging.info("after SQL")
+            logger.info("after SQL")
 
             cursor.execute("SELECT id FROM accounts WHERE username = %s", (username,))
             acc_id = cursor.fetchone()
-            logging.info(f"Here are the acc_details: {acc_id}")
+            #logging.info(f"Here are the acc_details: {acc_id}")
+            logger.info(f"Here are the acc_details: {acc_id}")
             account_number = acc_id['id']
-            logging.info(f"Have account number: {account_number}")
+            #logging.info(f"Have account number: {account_number}")
+            logger.info(f"Have account number: {account_number}")
 
             sql_insert_transaction = "INSERT INTO transaction_info (accnum, transaction_date, transaction_type, amount, new_balance) VALUES (%s, %s, %s, %s, %s)"
-            logging.info("after second sql")
+            #logging.info("after second sql")
+            logger.info("after second sql")
             transaction_date = datetime.today().strftime('%Y-%m-%d')
-            logging.info("after trans date")
+            #logging.info("after trans date")
+            logger.info("after trans date")
 
             sql_id = "SELECT balance FROM accounts WHERE id=%s"
             cursor.execute(sql_id, account_number)
             user_details = cursor.fetchone()
             new_balance = user_details['balance']
-            logging.info("after new balance")
-            logging.info(f"new balance is {new_balance}")
+            #logging.info("after new balance")
+            #logging.info(f"new balance is {new_balance}")
+            logger.info(f"new balance is {new_balance}")
             cursor.execute(sql_insert_transaction, (account_number, transaction_date, "Withdrawal", amt, new_balance))
             connection.commit()
 
         connection.commit()
-        logging.info("Withdrawal successful")
+        #logging.info("Withdrawal successful")
+        logger.info("Withdrawal successful")
 
     except Exception as e:
-        logging.error(f"Error withdrawing from account: {e}")
+        #logging.error(f"Error withdrawing from account: {e}")
+        logger.error(f"Error withdrawing from account: {e}")
         return RedirectResponse(url="/renderLogin", status_code=303)
         #raise HTTPException(status_code=500, detail="Could not withdraw amount")
 
@@ -300,7 +350,8 @@ async def display_transactions(request: Request):
         with connection.cursor() as cursor:
             cursor.execute("SELECT id FROM accounts WHERE username = %s", (username,))
             acc_details = cursor.fetchone()
-            logging.info(f"Here are the acc_details: {acc_details}")
+            #logging.info(f"Here are the acc_details: {acc_details}")
+            logger.info(f"Here are the acc_details: {acc_details}")
             account_number = acc_details['id']
 
             sql = "SELECT * FROM transaction_info WHERE accnum = %s"
@@ -309,7 +360,8 @@ async def display_transactions(request: Request):
             if not transactions:
                 raise HTTPException(status_code=404, detail="No transactions found for the specified account")
     except Exception as e:
-        logging.error(f"Error retrieving transactions: {e}")
+        #logging.error(f"Error retrieving transactions: {e}")
+        logger.error(f"Error retrieving transactions: {e}")
         raise HTTPException(status_code=500, detail="Could not retrieve transactions")
     return templates.TemplateResponse("renderTransactions.html", {"request": request, "transactions": transactions})
 
@@ -321,7 +373,7 @@ async def display_transactions(request: Request):
 
 
 
-# ################## INCOMPLETE INTEREST #############################
+# ################## INTEREST #############################
 class InterestRequest(BaseModel):
     accnum: str
     date: str
@@ -373,7 +425,4 @@ async def depositComplete(request: Request):
     return templates.TemplateResponse("withdrawCompleted.html", {"request":request})
 
 
-# in all the other functions: transactions, deposit, withdrawal, they need to read the username from the cookie
-# and use that to access the account details rather than the user inputting their own account number every time
 
-# also make sure that we do a check on a username to make sure that its not already taken
