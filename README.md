@@ -79,6 +79,8 @@ Replace the HOST, USER, PASSWORD, and DATABASE environment variables with your o
 
 And that’s all there is to it!
 
+Here's a glimpse of the app's standout features—take a look at the transactions log!
+
 ![Screenshot 2024-08-08 at 9 33 04 AM](https://github.com/user-attachments/assets/f062d6c0-3fec-4ee2-8ba4-6b93ebb94a62)
 
 
