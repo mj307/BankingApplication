@@ -47,14 +47,7 @@ connection = pymysql.connect(host=host,
                              cursorclass=pymysql.cursors.DictCursor)
 #'''
 
-'''
-connection = pymysql.connect(host='localhost',
-                             user='aj',
-                             password='abc',
-                             database='practice',
-                             charset='utf8mb4',
-                             cursorclass=pymysql.cursors.DictCursor)
-'''
+
 
 with connection.cursor() as cursor:
     cursor.execute("""
