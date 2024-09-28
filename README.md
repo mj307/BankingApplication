@@ -39,9 +39,9 @@ When configuring the MySQL database, ensure the settings match your local enviro
 ```python
 connection = pymysql.connect(
     host='localhost',
-    user='aj',
-    password='abc',
-    database='practice',
+    user='user1',
+    password='helloworld',
+    database='bank',
     charset='utf8mb4',
     cursorclass=pymysql.cursors.DictCursor
 )
